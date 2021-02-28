@@ -161,3 +161,26 @@ func TestTree_GetWildCatchTrailing(t *testing.T) {
 	require.NotNil(t, err)
 	require.Equal(t, err, ErrNotFound)
 }
+
+func TestTree_GetMultiLevel(t *testing.T) {
+	tr := NewTree()
+	ctx := Context(10)
+	err := tr.Add("www.example.com", &ctx)
+	assert.Nil(t, err)
+
+	ctx2 := Context(20)
+	err = tr.Add("www.example.com.biz", &ctx2)
+	assert.Nil(t, err)
+
+	ctxResult, err := tr.Get("www.example.com")
+	require.Nil(t, err)
+	require.Equal(t, *ctxResult, Context(10))
+
+	ctxResult2, err := tr.Get("www.example.com.biz")
+	require.Nil(t, err)
+	require.Equal(t, *ctxResult2, Context(20))
+
+	_, err = tr.Get("www.example.biz")
+	require.NotNil(t, err)
+	require.Equal(t, err, ErrNotFound)
+}
